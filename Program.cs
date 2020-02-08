@@ -8,7 +8,7 @@ namespace SiteBotnet3
     class Program
     {
         private static readonly string AppName = "SiteBotnet";
-        private static readonly string AppVersion = "3.4";
+        private static readonly string AppVersion = "3.5";
 
         public static readonly Random Rand = new Random();
 
