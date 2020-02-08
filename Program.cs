@@ -1,18 +1,20 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using ConfigParser;
+using SharpConfigParser;
 
 namespace SiteBotnet3
 {
     class Program
     {
         private static readonly string AppName = "SiteBotnet";
-        private static readonly string AppVersion = "3.3";
+        private static readonly string AppVersion = "3.4";
+
+        public static readonly Random Rand = new Random();
 
         static void Main(string[] args)
         {
-            if (!File.Exists("proxies.txt")) File.WriteAllText("proxies.txt", "");
+            if (!File.Exists("proxies.txt")) File.WriteAllText("proxies.txt", string.Empty);
 
             string Method;
             string Target;
@@ -22,11 +24,11 @@ namespace SiteBotnet3
 
             if (args.Length == 0)
             {
-                Parser p = new Parser("config.txt");
-                Method = p.ReadConfig("Method").ToString().Split('=')[1].Replace(" ", "");
-                Target = p.ReadConfig("Target").ToString().Split('=')[1].Replace(" ", "");
-                Threads = Convert.ToInt32(p.ReadConfig("Threads").ToString().Split('=')[1].Replace(" ", ""));
-                ProxyType = p.ReadConfig("ProxyType").ToString().Split('=')[1].Replace(" ", "");
+                Parser p = new Parser() { ConfigFile = "config.txt" };
+                Method = p.Read("Method").ToString().Split('=')[1].ReplaceSpaces();
+                Target = p.Read("Target").ToString().Split('=')[1].ReplaceSpaces();
+                Threads = Convert.ToInt32(p.Read("Threads").ToString().Split('=')[1].ReplaceSpaces());
+                ProxyType = p.Read("ProxyType").ToString().Split('=')[1].ReplaceSpaces();
             }
             else
             {

