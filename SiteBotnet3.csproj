@@ -33,11 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Leaf.xNet, Version=5.2.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Leaf.xNet.5.2.5\lib\net472\Leaf.xNet.dll</HintPath>
+    <Reference Include="Leaf.xNet, Version=5.1.83.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Leaf.xNet.5.1.83\lib\net472\Leaf.xNet.dll</HintPath>
     </Reference>
     <Reference Include="SharpConfigParser">
-      <HintPath>..\..\..\SharpConfigParser.dll</HintPath>
+      <HintPath>..\SharpConfigParser.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
